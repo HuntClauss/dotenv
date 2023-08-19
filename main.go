@@ -1,16 +1,10 @@
 package main
 
 import (
-	_ "embed"
-	"fmt"
+	_ "dotenv/autoload"
 )
 
-//go:embed example.env
-var content string
-
 func main() {
-	tokenizer := NewTokenizer(content)
-
-	tokens := tokenizer.ReadAll()
-	fmt.Println(tokens)
+	//err := env.LoadEnv("example.env", "test.env", "eo.env", "rfsa.env")
+	//log.Println(err)
 }
