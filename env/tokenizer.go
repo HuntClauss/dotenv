@@ -1,4 +1,4 @@
-package main
+package env
 
 const EOF = 0
 const (
