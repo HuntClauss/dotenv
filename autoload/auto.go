@@ -1,7 +1,7 @@
 package autoload
 
-import "dotenv/env"
+import "github.com/HuntClauss/dotenv"
 
 func init() {
-	panic(env.LoadEnv(".env"))
+	panic(dotenv.LoadEnv(".env"))
 }

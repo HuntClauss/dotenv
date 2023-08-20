@@ -1,4 +1,4 @@
-package env
+package dotenv
 
 import (
 	"errors"
@@ -31,8 +31,8 @@ func loadEnv(result map[string]string, filepath string) error {
 		return fmt.Errorf("cannot read '%s' content: %w", filepath, err)
 	}
 
-	parser := NewParser(NewTokenizer(string(data)).ReadAll())
-	for k, v := range parser.Parse() {
+	parser := newParser(newTokenizer(string(data)).readAll())
+	for k, v := range parser.parse() {
 		if _, ok := result[k]; !ok {
 			result[k] = v
 		}
@@ -42,12 +42,21 @@ func loadEnv(result map[string]string, filepath string) error {
 }
 
 func Get(key string) string {
-	return environments[key]
+	if value, ok := environments[key]; ok {
+		return value
+	}
+
+	return os.Getenv(key)
 }
 
 func GetDefault(key string, def string) string {
 	if value, ok := environments[key]; ok {
 		return value
 	}
+
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+
 	return def
 }
