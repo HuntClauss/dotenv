@@ -1,3 +1,3 @@
-module github.com/HuntClauss/dotenv
+module github.com/huntclauss/dotenv
 
 go 1.20
