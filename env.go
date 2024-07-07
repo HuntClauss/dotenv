@@ -32,28 +32,51 @@ func loadEnv(result map[string]string, filepath string) error {
 	}
 
 	parser := newParser(newTokenizer(string(data)).readAll())
+	var groupErr error
 	for k, v := range parser.parse() {
-		if _, ok := result[k]; !ok {
-			result[k] = v
+		if _, ok := os.LookupEnv(k); !ok {
+			if err := os.Setenv(k, v); err != nil {
+				groupErr = errors.Join(groupErr, err)
+			}
 		}
 	}
 
-	return nil
+	return groupErr
+}
+
+func Environ() []KeyValue {
+	envs := os.Environ()
+	result := make([]KeyValue, len(envs))
+	for i, env := range envs {
+		result[i] = keyValueFromString(env)
+	}
+
+	return result
 }
 
 func Get(key string) string {
-	if value, ok := environments[key]; ok {
-		return value
-	}
-
 	return os.Getenv(key)
 }
 
-func GetDefault(key string, def string) string {
-	if value, ok := environments[key]; ok {
+func MustGet(key string) string {
+	if value, ok := os.LookupEnv(key); ok {
 		return value
 	}
 
+	panic("missing environment variable: " + key)
+}
+
+func ISSet(keys ...string) bool {
+	for _, key := range keys {
+		if _, ok := os.LookupEnv(key); !ok {
+			return false
+		}
+	}
+
+	return true
+}
+
+func GetDefault(key string, def string) string {
 	if value, ok := os.LookupEnv(key); ok {
 		return value
 	}
